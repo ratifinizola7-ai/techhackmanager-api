@@ -2,7 +2,9 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Equipe;
 import com.example.demo.repository.EquipeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,16 +13,20 @@ import java.util.List;
 @RequestMapping("/api/equipes")
 public class EquipeController {
 
-    @Autowired
-    private EquipeRepository equipeRepository;
+    private final EquipeRepository equipeRepository;
 
-    @GetMapping
-    public List<Equipe> listarTodas() {
-        return equipeRepository.findAll();
+    public EquipeController(EquipeRepository equipeRepository) {
+        this.equipeRepository = equipeRepository;
     }
 
     @PostMapping
-    public Equipe criarEquipe(@RequestBody Equipe equipe) {
-        return equipeRepository.save(equipe);
+    public ResponseEntity<Equipe> criarEquipe(@RequestBody @Valid Equipe equipe) {
+        Equipe novaEquipe = equipeRepository.save(equipe);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novaEquipe);
+    }
+
+    @GetMapping
+    public List<Equipe> listarEquipes() {
+        return equipeRepository.findAll();
     }
 }
